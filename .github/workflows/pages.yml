@@ -16,7 +16,8 @@ concurrency:
 env:
   # Set this to "/<repo>" if deploying to https://<user>.github.io/<repo>
   # Set to "" if deploying to https://<user>.github.io
-  NEXT_PUBLIC_BASE_PATH: "/Website"
+  # Repo is "Website" but GitHub Pages URL is case-sensitive and uses lowercase path.
+  NEXT_PUBLIC_BASE_PATH: "/website"
 
 jobs:
   build:
