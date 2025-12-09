@@ -1,0 +1,1070 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'Chicago';
+  src: url('/fonts/ChicagoFLF.ttf') format('truetype');
+}
+
+* {
+  padding: 0%;
+  margin: 0%;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: black;
+  font-family: 'Chicago', sans-serif;
+  font-weight: bold;
+  background-size: cover;
+  min-height: 100vh;
+  margin: 0;
+}
+
+.module {
+  border: 3px solid rgb(44, 44, 44);
+  border-radius: 10px;
+  /* Slightly adjusted 1% -> 4px for consistency */
+  overflow: hidden;
+  width: 800px;
+  height: 600px;
+  background-color: white;
+  position: relative;
+  z-index: 10;
+  /* Changed from absolute to relative for React context usually, but keeping absolute if needed for centering? Body is flex center, so relative is better */
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Original styles below */
+
+.module p {
+  margin: 0 5px 0 5px;
+}
+
+nav {
+  width: 800px;
+  height: 30px;
+  border-bottom: 1px solid rgb(44, 44, 44);
+  background-color: rgb(238, 238, 238);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.canvas {
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAaUlEQVQoU12PCw2AMAwFbzaGDLCBDXSgAxvYABlgY+RgWxqaLOnn+vqWgBE4+WIFNuCudUk1EZorYCsDF5Aa4OYelAowqCTg0GeodLhZ62yiXL8JTNFTJ9vNv6cG9JvhN68nAYdRaYmeHot9F9X2eFD0AAAAAElFTkSuQmCC") repeat;
+  width: 800px;
+  height: 570px;
+  overflow: hidden;
+  position: relative;
+  /* Ensure absolute children are positioned relative to canvas */
+}
+
+.box a img {
+  width: 15px;
+  height: 15px;
+  fill: black;
+}
+
+.box a img:hover {
+  fill: white;
+}
+
+nav a {
+  height: 100%;
+  margin: 0;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  color: black;
+  text-decoration: none;
+}
+
+nav a:hover {
+  cursor: pointer;
+  background-color: black;
+  color: white;
+}
+
+/* Ensure svg inside a link inverts color on hover */
+nav a:hover img {
+  filter: invert(1);
+}
+
+.icon {
+  cursor: move;
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+  width: 60px;
+  height: 60px;
+  margin: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.icon img {
+  width: 30px;
+  height: 30px;
+  background-color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 5px;
+}
+
+.icon .sprite-top {
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  -ms-interpolation-mode: nearest-neighbor;
+  margin-bottom: 5px;
+}
+
+.icon .sprite-file {
+  width: 28px;
+  height: 36px;
+}
+
+.icon .sprite-folder {
+  width: 36px;
+  height: 29px;
+}
+
+.icon .sprite-sound {
+  width: 28px;
+  height: 36px;
+}
+
+.icon h5 {
+  background-color: rgba(255, 255, 255, 0.8);
+  width: 90px;
+  display: flex;
+  justify-content: center;
+  font-size: 10px;
+  /* Guessing size */
+  padding: 2px;
+}
+
+.desktop-icon {
+  position: absolute;
+  user-select: none;
+  touch-action: none;
+}
+
+#asukahidden {
+  width: 30px;
+  height: 30px;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.message {
+  width: 400px;
+  height: 400px;
+  border: 1px solid rgb(44, 44, 44);
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 100px;
+  left: 200px;
+  z-index: 20;
+}
+
+/* Retro Macintosh Window Styling */
+.mac-window {
+  position: absolute;
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow:
+    inset -1px -1px 0px #000000,
+    inset 1px 1px 0px #ffffff,
+    2px 2px 0px #000000;
+  z-index: 20;
+  overflow: hidden;
+  transform-origin: bottom left;
+}
+
+.mac-window-titlebar {
+  background-color: #e0e0e0;
+  background-image:
+    repeating-linear-gradient(to bottom,
+      #a0a0a0 0px,
+      #a0a0a0 1px,
+      #d0d0d0 1px,
+      #d0d0d0 2px),
+    repeating-linear-gradient(to bottom,
+      #a0a0a0 0px,
+      #a0a0a0 1px,
+      #d0d0d0 1px,
+      #d0d0d0 2px);
+  background-position:
+    left top,
+    right top;
+  background-size:
+    30% 100%,
+    30% 100%;
+  background-repeat: no-repeat;
+  border-bottom: 1px solid #000000;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  height: 20px;
+  font-size: 11px;
+  font-weight: bold;
+  user-select: none;
+  position: relative;
+  image-rendering: pixelated;
+}
+
+.mac-button {
+  width: 12px;
+  height: 12px;
+  border: 1px solid #000000;
+  border-radius: 0;
+  padding: 0;
+  cursor: pointer;
+  background-color: #e0e0e0;
+  box-shadow:
+    inset -1px -1px 0px #808080,
+    inset 1px 1px 0px #ffffff;
+  image-rendering: pixelated;
+  margin-right: 4px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.mac-button-close::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 6px;
+  height: 1px;
+  background-color: #000000;
+}
+
+.mac-button-close:hover {
+  background-color: #c0c0c0;
+}
+
+.mac-window-title {
+  flex: 1;
+  text-align: center;
+  font-family: 'Chicago', sans-serif;
+  font-size: 11px;
+  font-weight: bold;
+  color: #000000;
+  pointer-events: none;
+  padding-right: 1rem;
+}
+
+.mac-window-content {
+  flex: 1;
+  overflow: hidden;
+  padding: 8px;
+  background-color: #ffffff;
+  min-height: 0;
+}
+
+/* README Window - ensure only message div scrolls */
+.readme-window .mac-window-content {
+  overflow: hidden !important;
+  padding: 8px;
+  display: block !important;
+  height: 100%;
+}
+
+/* PDF Window - remove padding to make PDF flush with window edges */
+.pdf-window .mac-window-content {
+  padding: 0;
+  overflow: hidden;
+  background-color: #ffffff;
+}
+
+/* Mac-style window opening animation */
+.window-opening {
+  animation: macWindowOpen 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes macWindowOpen {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+}
+
+/* Mac-style window closing animation */
+.window-closing {
+  animation: macWindowClose 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  pointer-events: none;
+}
+
+@keyframes macWindowClose {
+  0% {
+    transform: scale(1, 1);
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(0, 0);
+    opacity: 0;
+  }
+}
+
+/* Music Player Styling */
+.music-player {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  background-color: #ffffff;
+  font-family: 'Chicago', sans-serif;
+}
+
+.audio-visualizer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 40px;
+  gap: 2px;
+  padding: 8px;
+  background-color: #ffffff;
+  border: 1px solid #000000;
+}
+
+.visualizer-bar {
+  flex: 1;
+  background-color: #000000;
+  min-height: 4px;
+  transition: height 0.15s ease;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scaleY(0.7);
+    opacity: 0.7;
+  }
+}
+
+.channel-selector {
+  padding: 0 8px;
+}
+
+.channel-dropdown {
+  width: 100%;
+  padding: 4px 8px;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  font-family: 'Chicago', sans-serif;
+  font-size: 10px;
+  cursor: pointer;
+  box-shadow: inset -1px -1px 0px #808080, inset 1px 1px 0px #ffffff;
+}
+
+.channel-dropdown:focus {
+  outline: none;
+  box-shadow: inset -1px -1px 0px #000000, inset 1px 1px 0px #000000;
+}
+
+.divider {
+  height: 1px;
+  background-color: #000000;
+  margin: 4px 0;
+}
+
+.playback-time {
+  text-align: center;
+  font-size: 10px;
+  font-weight: bold;
+  color: #000000;
+  padding: 0 16px 0 8px;
+}
+
+#time{
+  padding-right: 10px;
+}
+
+.song-info {
+  text-align: center;
+  padding: 0 8px;
+}
+
+.song-title {
+  font-size: 14px;
+  font-weight: bold;
+  color: #000000;
+  margin-bottom: 4px;
+}
+
+.song-artist {
+  font-size: 11px;
+  color: #666666;
+}
+
+.player-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+}
+
+.control-btn {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #000000;
+  background-color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    inset -1px -1px 0px #808080,
+    inset 1px 1px 0px #ffffff;
+  color: #000000;
+  padding: 0;
+  transition: all 0.1s ease;
+}
+
+.control-btn:hover {
+  background-color: #f0f0f0;
+  box-shadow:
+    inset -1px -1px 0px #000000,
+    inset 1px 1px 0px #000000;
+}
+
+.control-btn:active {
+  box-shadow:
+    inset 1px 1px 0px #808080,
+    inset -1px -1px 0px #ffffff;
+}
+
+.control-btn.active {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.play-pause-btn {
+  width: 40px;
+  height: 40px;
+}
+
+#message {
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+  height: 380px !important;
+  width: 100% !important;
+  display: block !important;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* Global Custom Retro Scrollbar */
+/* Global Custom Retro Scrollbar */
+/* Using * selector to ensure it applies to all elements */
+*::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+  background-color: #ffffff;
+  display: block;
+  /* Ensure it takes up space */
+}
+
+*::-webkit-scrollbar-track {
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAaUlEQVQoU12PCw2AMAwFbzaGDLCBDXSgAxvYABlgY+RgWxqaLOnn+vqWgBE4+WIFNuCudUk1EZorYCsDF5Aa4OYelAowqCTg0GeodLhZ62yiXL8JTNFTJ9vNv6cG9JvhN68nAYdRaYmeHot9F9X2eFD0AAAAAElFTkSuQmCC");
+  border-left: 1px solid #000000;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #ffffff;
+  /* White thumb as per reference code */
+  border: 1px solid #000000;
+  box-shadow: none;
+  /* Removing 3D effect to match flat reference code */
+  border-radius: 0 !important;
+  /* Force square */
+}
+
+*::-webkit-scrollbar-button {
+  background-color: #ffffff;
+  border: 1px solid #000000;
+  box-shadow: none;
+  display: block;
+  height: 14px;
+  width: 14px;
+}
+
+*::-webkit-scrollbar-button:active {
+  background-color: #000000;
+  box-shadow: none;
+}
+
+/* Up Arrow */
+*::-webkit-scrollbar-button:vertical:decrement {
+  background-image: linear-gradient(45deg, transparent 50%, #000 50%), linear-gradient(135deg, #000 50%, transparent 50%);
+  background-position: center bottom, center bottom;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+/* Down Arrow */
+*::-webkit-scrollbar-button:vertical:increment {
+  background-image: linear-gradient(-45deg, transparent 50%, #000 50%), linear-gradient(-135deg, #000 50%, transparent 50%);
+  background-position: center top, center top;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+/* Horizontal Left Arrow */
+*::-webkit-scrollbar-button:horizontal:decrement {
+  background-image: linear-gradient(135deg, transparent 50%, #000 50%), linear-gradient(45deg, #000 50%, transparent 50%);
+  background-position: right center, right center;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+/* Horizontal Right Arrow */
+*::-webkit-scrollbar-button:horizontal:increment {
+  background-image: linear-gradient(-135deg, transparent 50%, #000 50%), linear-gradient(-45deg, #000 50%, transparent 50%);
+  background-position: left center, left center;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+}
+
+*::-webkit-scrollbar-corner {
+  background-color: #ffffff;
+  border: 1px solid #000000;
+}
+
+/* Firefox scrollbar styling */
+#message,
+html {
+  scrollbar-width: auto;
+  scrollbar-color: #c0c0c0 #ffffff;
+}
+
+#message p {
+  margin: 10px;
+}
+
+.dialogue-box .ui-dialog-titlebar {
+  background-color: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgb(44, 44, 44);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dialogue-box span.ui-dialog-titlebar {
+  color: red;
+}
+
+.dialogue-box button {
+  width: 17px;
+  height: 17px;
+  background-color: red;
+  border: 1px solid rgb(255, 92, 92);
+  overflow: hidden;
+  color: red;
+  border-radius: 70%;
+  order: -1;
+}
+
+.yuri-music {
+  border: 1px solid rgb(44, 44, 44);
+  background-color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.dropdown {
+  display: block;
+  z-index: 100;
+  width: 200px;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.95);
+  border: 1px solid black;
+  font-size: medium;
+  top: 30px;
+  /* Below nav */
+}
+
+.dropdown ul {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  margin: 0;
+}
+
+.dropdown ul li {
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 5px 0;
+}
+
+.dropdown ul li:hover {
+  background-color: rgb(44, 44, 44);
+  color: white;
+}
+
+.dropdown ul a {
+  text-decoration: none;
+  color: black;
+  width: 100%;
+  text-align: center;
+}
+
+.dropdown ul a li:hover {
+  color: white;
+}
+
+.unclickable {
+  color: grey;
+  pointer-events: none;
+}
+
+/* Positioning for dropdowns */
+.apple {
+  left: 10px;
+}
+
+.file {
+  left: 50px;
+}
+
+/* Adjusted guesses based on nav items */
+.edit {
+  left: 90px;
+}
+
+.special {
+  left: 130px;
+}
+
+.aboutscreen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 50;
+  background-color: rgba(255, 255, 255, 0.9);
+  width: 400px;
+  height: 250px;
+  left: 200px;
+  top: 150px;
+}
+
+.aboutscreen p {
+  width: 230px;
+  text-align: center;
+  margin: 3% 0 0 1%;
+}
+
+.border-about {
+  border: 2px solid black;
+  padding: 19%;
+}
+
+.ytasuka {
+  position: absolute;
+  z-index: 1;
+  left: 20%;
+  top: 20%;
+}
+
+.based {
+  width: 498px;
+  height: 25px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-top: 1px solid black;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+}
+
+.based-nav {
+  width: 325px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.exit {
+  background-color: red;
+  margin: 1.5%;
+  height: 15px;
+  width: 15px;
+  border-radius: 100%;
+  cursor: pointer;
+}
+
+/* main screens styling */
+.bios {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background: linear-gradient(to top, #000000, #080404, #141416, #1a1a1a);
+  background-size: 100% 4px;
+  color: white;
+  font-family: 'Chicago', sans-serif;
+  text-shadow: 0 0 2px #c8c8c8;
+  font-size: 1.2rem;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  animation: scanlines infinite 55s linear;
+}
+
+@keyframes scanlines {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 -10px;
+  }
+}
+
+.text {
+  padding: 20px;
+  width: 100%;
+  height: 100%;
+  font-size: small;
+  animation: flicker 0.15s infinite;
+}
+
+.text p {
+  margin-top: 3px;
+  margin-left: 20px;
+}
+
+.password-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(255, 255, 255);
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAaUlEQVQoU12PCw2AMAwFbzaGDLCBDXSgAxvYABlgY+RgWxqaLOnn+vqWgBE4+WIFNuCudUk1EZorYCsDF5Aa4OYelAowqCTg0GeodLhZ62yiXL8JTNFTJ9vNv6cG9JvhN68nAYdRaYmeHot9F9X2eFD0AAAAAElFTkSuQmCC") repeat;
+}
+
+.input-box {
+  width: 450px;
+  height: 200px;
+  background-color: rgba(255, 255, 255, 0.637);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.password-hold {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.outline {
+  border: 2px solid black;
+  width: 440px;
+  height: 190px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.password-hold button {
+  width: 100px;
+  height: 26px;
+  border: 2px solid black;
+  cursor: pointer;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 0;
+  margin: 0;
+  font-family: 'Chicago', sans-serif;
+  font-weight: bold;
+  font-size: 10px;
+  line-height: 1;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-align: center;
+}
+
+#password-hint {
+  font-size: 10px;
+  cursor: pointer;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.97;
+  }
+
+  5% {
+    opacity: 0.95;
+  }
+
+  10% {
+    opacity: 0.9;
+  }
+
+  15% {
+    opacity: 0.95;
+  }
+
+  20% {
+    opacity: 0.99;
+  }
+
+  25% {
+    opacity: 0.95;
+  }
+
+  30% {
+    opacity: 0.9;
+  }
+
+  35% {
+    opacity: 0.96;
+  }
+
+  40% {
+    opacity: 0.98;
+  }
+
+  45% {
+    opacity: 0.95;
+  }
+
+  50% {
+    opacity: 0.99;
+  }
+
+  55% {
+    opacity: 0.93;
+  }
+
+  60% {
+    opacity: 0.9;
+  }
+
+  65% {
+    opacity: 0.96;
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  75% {
+    opacity: 0.97;
+  }
+
+  80% {
+    opacity: 0.95;
+  }
+
+  85% {
+    opacity: 0.92;
+  }
+
+  90% {
+    opacity: 0.97;
+  }
+
+  95% {
+    opacity: 0.99;
+  }
+
+  100% {
+    opacity: 0.94;
+  }
+}
+
+.blinking {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Background Video Styles */
+.background-video {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: -1;
+  opacity: 1;
+  pointer-events: none;
+}
+
+/* Classic Macintosh Scrollbar Styling */
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: #c0c0c0;
+  border: 1px solid #808080;
+  box-shadow:
+    inset 1px 1px 0px #ffffff,
+    inset -1px -1px 0px #000000;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #808080;
+  border: 1px solid #000000;
+  box-shadow:
+    inset 1px 1px 0px #c0c0c0,
+    inset -1px -1px 0px #404040;
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #606060;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #404040;
+  box-shadow:
+    inset 1px 1px 0px #808080,
+    inset -1px -1px 0px #000000;
+}
+
+::-webkit-scrollbar-corner {
+  background: #c0c0c0;
+  border: 1px solid #808080;
+}
+
+/* Firefox scrollbar styling */
+* {
+  scrollbar-width: auto;
+  scrollbar-color: #808080 #c0c0c0;
+}
+
+/* PDF Container Styling */
+.pdf-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.pdf-iframe {
+  /* Hide default scrollbars */
+  scrollbar-width: none !important;
+  /* Firefox */
+  -ms-overflow-style: none !important;
+  /* IE and Edge */
+}
+
+.pdf-iframe::-webkit-scrollbar {
+  display: none !important;
+  /* Chrome, Safari, Opera */
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Hide scrollbars in PDF viewer */
+.pdf-iframe embed,
+.pdf-iframe object {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.pdf-iframe embed::-webkit-scrollbar,
+.pdf-iframe object::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Custom Mac-style scrollbar for PDF container wrapper */
+.pdf-container::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+.pdf-container::-webkit-scrollbar-track {
+  background: #c0c0c0;
+  border: 1px solid #808080;
+  box-shadow:
+    inset 1px 1px 0px #ffffff,
+    inset -1px -1px 0px #000000;
+}
+
+.pdf-container::-webkit-scrollbar-thumb {
+  background: #808080;
+  border: 1px solid #000000;
+  box-shadow:
+    inset 1px 1px 0px #c0c0c0,
+    inset -1px -1px 0px #404040;
+  border-radius: 0;
+}
+
+.pdf-container::-webkit-scrollbar-thumb:hover {
+  background: #606060;
+}
+
+.pdf-container::-webkit-scrollbar-thumb:active {
+  background: #404040;
+  box-shadow:
+    inset 1px 1px 0px #808080,
+    inset -1px -1px 0px #000000;
+}
+
+.pdf-container::-webkit-scrollbar-corner {
+  background: #c0c0c0;
+  border: 1px solid #808080;
+}
