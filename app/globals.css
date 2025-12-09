@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: 'Chicago';
-  src: url('/fonts/ChicagoFLF.ttf') format('truetype');
+  src: url(var(--base-path, '')'/fonts/ChicagoFLF.ttf') format('truetype');
 }
 
 * {

@@ -6,9 +6,11 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
   return (
     <html lang="en">
-      <body>
+      <body style={{ '--base-path': basePath }}>
         {children}
       </body>
     </html>
