@@ -1,9 +1,12 @@
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
+const withBase = (p) => (p?.startsWith('/') ? `${BASE_PATH}${p}` : p);
+
 export const fileSystem = [
   {
     id: 'README',
     title: 'README.txt',
     type: 'file',
-    icon: '/fileicon.png',
+    icon: withBase('/fileicon.png'),
     sprite: 'sprite-file', // Class for sprite usage
     windowSize: { w: 400, h: 400 },
     content: `
@@ -18,7 +21,7 @@ export const fileSystem = [
     id: 'YURI',
     title: 'YuriTheDev',
     type: 'folder',
-    icon: '/foldericon.png',
+    icon: withBase('/foldericon.png'),
     sprite: 'sprite-folder',
     windowSize: { w: 600, h: 400 },
     children: [
@@ -26,9 +29,9 @@ export const fileSystem = [
         id: 'RESUME',
         title: 'resume.txt',
         type: 'pdf',
-        icon: '/fileicon.png',
+        icon: withBase('/fileicon.png'),
         sprite: 'sprite-file',
-        src: '/media/YuriPasamonteResume2026.pdf',
+        src: withBase('/media/YuriPasamonteResume2026.pdf'),
         windowSize: { w: 700, h: 600 },
       },
     ],
@@ -37,7 +40,7 @@ export const fileSystem = [
     id: 'MUSIC',
     title: 'MUSIC',
     type: 'folder',
-    icon: '/foldericon.png',
+    icon: withBase('/foldericon.png'),
     sprite: 'sprite-folder',
     windowSize: { w: 600, h: 400 },
     children: [
@@ -45,19 +48,19 @@ export const fileSystem = [
         id: 'ec2a-test',
         title: 'ec2a-test.mp3',
         type: 'music',
-        icon: '/soundicon.png',
+        icon: withBase('/soundicon.png'),
         sprite: 'sprite-sound',
-        src: '/media/ec2atest.mp3',
-        videoSrc: '/media/ec2avideo.mp4', // Video background for this song
+        src: withBase('/media/ec2atest.mp3'),
+        videoSrc: withBase('/media/ec2avideo.mp4'), // Video background for this song
       },
       {
         id: 'whisper',
         title: 'whisper.mp3',
         type: 'music',
-        icon: '/soundicon.png',
+        icon: withBase('/soundicon.png'),
         sprite: 'sprite-sound',
-        src: '/media/whisper.mp3',
-        videoSrc: '/media/whisper.mp4', // Video background for this song
+        src: withBase('/media/whisper.mp3'),
+        videoSrc: withBase('/media/whisper.mp4'), // Video background for this song
       },
     ],
   },

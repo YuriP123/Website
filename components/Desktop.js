@@ -3,6 +3,9 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
 import { fileSystem } from '@/utils/fileSystem';
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
+const withBase = (p) => (p?.startsWith('/') ? `${BASE_PATH}${p}` : p);
+
 const ICON_SIZE = 70; // px, used for simple clamping inside the canvas
 
 export default function Desktop({ onOpenWindow, showHiddenFiles }) {
@@ -13,7 +16,7 @@ export default function Desktop({ onOpenWindow, showHiddenFiles }) {
     id: 'HIDDEN_GIF',
     title: 'gundam.gif',
     type: 'gif',
-    icon: '/fileicon.png',
+    icon: withBase('/fileicon.png'),
     sprite: 'sprite-file',
     windowSize: { w: 500, h: 400 },
   };

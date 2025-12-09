@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
+const withBase = (p) => (p?.startsWith('/') ? `${BASE_PATH}${p}` : p);
+
 export default function Navbar({ showHiddenFiles, onShowHiddenFiles }) {
   const [time, setTime] = useState('');
   const [activeDropdown, setActiveDropdown] = useState(null);
@@ -57,7 +60,7 @@ export default function Navbar({ showHiddenFiles, onShowHiddenFiles }) {
       <nav>
         <div className="box" style={{ display: 'flex', height: '100%', alignItems: 'center' }}>
           <a className="nav-item" style={{ padding: '0 15px', height: '100%', display: 'flex', alignItems: 'center' }} onClick={() => toggleDropdown('apple')}>
-            <img src="/pixel-banana.svg" alt="Banana" style={{ width: 22, height: 22, imageRendering: 'pixelated' }} />
+            <img src={withBase('/pixel-banana.svg')} alt="Banana" style={{ width: 22, height: 22, imageRendering: 'pixelated' }} />
           </a>
           <a className="nav-item" onClick={() => toggleDropdown('file')}>File</a>
           <a className="nav-item" onClick={() => toggleDropdown('edit')}>Edit</a>
