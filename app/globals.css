@@ -55,7 +55,7 @@ body {
     padding: 0 8px;
     position: sticky !important;
     top: 0;
-    z-index: 1000;
+    z-index: 80;
   }
 
   nav .nav-item {
@@ -894,7 +894,7 @@ html {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 900;
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;

@@ -14,7 +14,8 @@ export default function MusicPlayer({
   controlsEnabled = true,
   onNextSong,
   onPrevSong,
-  onPauseRef
+  onPauseRef,
+  condensed = false,
 }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -312,6 +313,7 @@ export default function MusicPlayer({
     <Window
       title="Music Player"
       onClose={handleClose}
+      className={`music-player-window${condensed ? ' condensed' : ''}`}
       style={{
         position: 'absolute',
         width: 400,

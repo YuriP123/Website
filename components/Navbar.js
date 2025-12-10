@@ -77,13 +77,13 @@ export default function Navbar({ showHiddenFiles, onShowHiddenFiles }) {
             display: 'flex',
             height: '100%',
             alignItems: 'center',
-            gap: isMobile ? 4 : 0,
+            gap: isMobile ? 2 : 0,
           }}
         >
           <a
             className="nav-item"
             style={{
-              padding: isMobile ? '0 8px' : '0 15px',
+              padding: isMobile ? '0 4px' : '0 15px',
               height: '100%',
               display: 'flex',
               alignItems: 'center',
@@ -93,14 +93,14 @@ export default function Navbar({ showHiddenFiles, onShowHiddenFiles }) {
             <img
               src={withBase('/pixel-banana.svg')}
               alt="Banana"
-              style={{ width: isMobile ? 18 : 22, height: isMobile ? 18 : 22, imageRendering: 'pixelated' }}
+              style={{ width: isMobile ? 16 : 22, height: isMobile ? 16 : 22, imageRendering: 'pixelated' }}
             />
           </a>
-          <a className="nav-item" style={isMobile ? { padding: '0 6px', fontSize: 12 } : {}} onClick={() => toggleDropdown('file')}>File</a>
-          <a className="nav-item" style={isMobile ? { padding: '0 6px', fontSize: 12 } : {}} onClick={() => toggleDropdown('edit')}>Edit</a>
-          <a className="nav-item" style={isMobile ? { padding: '0 6px', fontSize: 12 } : {}} onClick={() => toggleDropdown('special')}>Special</a>
+          <a className="nav-item" style={isMobile ? { padding: '0 4px', fontSize: 11 } : {}} onClick={() => toggleDropdown('file')}>File</a>
+          <a className="nav-item" style={isMobile ? { padding: '0 4px', fontSize: 11 } : {}} onClick={() => toggleDropdown('edit')}>Edit</a>
+          <a className="nav-item" style={isMobile ? { padding: '0 4px', fontSize: 11 } : {}} onClick={() => toggleDropdown('special')}>Special</a>
         </div>
-        <p id='time' style={isMobile ? { paddingRight: 4 } : {}}>{isMobile ? timeShort : timeFull}</p>
+        <p id='time' style={isMobile ? { paddingRight: 2, fontSize: 11, whiteSpace: 'nowrap' } : {}}>{isMobile ? timeShort : timeFull}</p>
       </nav>
 
       {activeDropdown === 'apple' && (
