@@ -1,12 +1,16 @@
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'Chicago';
-  src: url(var(--base-path, '')'/fonts/ChicagoFLF.ttf') format('truetype');
+@layer base {
+  @font-face {
+    font-family: 'Chicago';
+    src: url("/fonts/ChicagoFLF.ttf") format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
 }
-
 * {
-  padding: 0%;
+  padding: 0;
   margin: 0%;
   box-sizing: border-box;
 }
