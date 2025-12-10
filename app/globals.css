@@ -43,9 +43,10 @@ body {
   }
 
   :root {
+    --module-padding: 12px;
     --module-width: calc(100vw - (2 * var(--module-padding)));
-    --module-height: calc(100vh - var(--nav-height) - (2 * var(--module-padding)));
-    --canvas-height: calc(100vh - var(--nav-height) - (2 * var(--module-padding)));
+    --module-height: calc(100vh - var(--nav-height) - (2 * var(--module-padding)) - 12px);
+    --canvas-height: calc(100vh - var(--nav-height) - (2 * var(--module-padding)) - 12px);
   }
 
   nav {
