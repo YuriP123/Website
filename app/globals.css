@@ -45,8 +45,9 @@ body {
   :root {
     --module-padding: 12px;
     --module-width: calc(100vw - (2 * var(--module-padding)));
-    --module-height: calc(100vh - var(--nav-height) - (2 * var(--module-padding)) - 56px);
-    --canvas-height: calc(100vh - var(--nav-height) - (2 * var(--module-padding)) - 56px);
+    /* Extra breathing room so content doesn't touch edges or force scroll */
+    --module-height: calc(100vh - var(--nav-height) - (2 * var(--module-padding)) - 84px);
+    --canvas-height: calc(100vh - var(--nav-height) - (2 * var(--module-padding)) - 84px);
   }
 
   nav {
@@ -99,9 +100,9 @@ body {
     justify-content: flex-start;
     gap: 0;
     width: calc(100vw - 16px) !important;
-    height: min(280px, calc(100vh - 64px)) !important;
+    height: min(260px, calc(100vh - 80px)) !important;
     max-width: 100%;
-    max-height: min(280px, calc(100vh - 64px));
+    max-height: min(260px, calc(100vh - 80px));
     transition: height 2s ease-in-out, max-height 2s ease-in-out;
     overflow: hidden;
     margin: 8px;
