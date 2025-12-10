@@ -6,8 +6,19 @@ const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const withBase = (p) => (p?.startsWith('/') ? `${BASE_PATH}${p}` : p);
 
 export default function Navbar({ showHiddenFiles, onShowHiddenFiles }) {
-  const [time, setTime] = useState('');
+  const [timeFull, setTimeFull] = useState('');
+  const [timeShort, setTimeShort] = useState('');
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     const updateTime = () => {
@@ -27,8 +38,10 @@ export default function Navbar({ showHiddenFiles, onShowHiddenFiles }) {
       let curMinute = objToday.getMinutes();
       if (curMinute < 10) curMinute = "0" + curMinute;
 
+      const timeOnly = `ALCON1 ${curHour}:${curMinute}${curMeridiem}`;
       // Lore year 2049
-      setTime(`ALCON1 ${curHour}:${curMinute}${curMeridiem} - ${curMonth} ${dayOfMonth}, 2049`);
+      setTimeShort(timeOnly);
+      setTimeFull(`${timeOnly} - ${curMonth} ${dayOfMonth}, 2049`);
     };
 
     updateTime();
@@ -57,16 +70,37 @@ export default function Navbar({ showHiddenFiles, onShowHiddenFiles }) {
 
   return (
     <>
-      <nav>
-        <div className="box" style={{ display: 'flex', height: '100%', alignItems: 'center' }}>
-          <a className="nav-item" style={{ padding: '0 15px', height: '100%', display: 'flex', alignItems: 'center' }} onClick={() => toggleDropdown('apple')}>
-            <img src={withBase('/pixel-banana.svg')} alt="Banana" style={{ width: 22, height: 22, imageRendering: 'pixelated' }} />
+      <nav style={isMobile ? { justifyContent: 'space-between', width: '100%', padding: '0 8px' } : {}}>
+        <div
+          className="box"
+          style={{
+            display: 'flex',
+            height: '100%',
+            alignItems: 'center',
+            gap: isMobile ? 4 : 0,
+          }}
+        >
+          <a
+            className="nav-item"
+            style={{
+              padding: isMobile ? '0 8px' : '0 15px',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            onClick={() => toggleDropdown('apple')}
+          >
+            <img
+              src={withBase('/pixel-banana.svg')}
+              alt="Banana"
+              style={{ width: isMobile ? 18 : 22, height: isMobile ? 18 : 22, imageRendering: 'pixelated' }}
+            />
           </a>
-          <a className="nav-item" onClick={() => toggleDropdown('file')}>File</a>
-          <a className="nav-item" onClick={() => toggleDropdown('edit')}>Edit</a>
-          <a className="nav-item" onClick={() => toggleDropdown('special')}>Special</a>
+          <a className="nav-item" style={isMobile ? { padding: '0 6px', fontSize: 12 } : {}} onClick={() => toggleDropdown('file')}>File</a>
+          <a className="nav-item" style={isMobile ? { padding: '0 6px', fontSize: 12 } : {}} onClick={() => toggleDropdown('edit')}>Edit</a>
+          <a className="nav-item" style={isMobile ? { padding: '0 6px', fontSize: 12 } : {}} onClick={() => toggleDropdown('special')}>Special</a>
         </div>
-        <p id='time'>{time}</p>
+        <p id='time' style={isMobile ? { paddingRight: 4 } : {}}>{isMobile ? timeShort : timeFull}</p>
       </nav>
 
       {activeDropdown === 'apple' && (
@@ -109,7 +143,7 @@ export default function Navbar({ showHiddenFiles, onShowHiddenFiles }) {
         <div className="dropdown special">
           <ul>
             <a target="_blank" href="https://www.linkedin.com/in/miguelpasamonte/"><li>LinkedIn</li></a>
-            <a target="_blank" href="https://github.com/miguelpasamonte"><li>GitHub</li></a>
+            <a target="_blank" href="https://github.com/YuriP123"><li>GitHub</li></a>
             <a target="_blank" href="https://leetcode.com/YuriP123/"><li>LeetCode</li></a>
           </ul>
         </div>

@@ -27,18 +27,134 @@ body {
   margin: 0;
 }
 
+:root {
+  --module-width: 800px;
+  --module-height: 600px;
+  --canvas-height: 570px;
+  --module-padding: 8px;
+  --nav-height: 30px;
+}
+
+@media (max-width: 768px) {
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  :root {
+    --module-width: calc(100vw - (2 * var(--module-padding)));
+    --module-height: calc(100vh - var(--nav-height) - (2 * var(--module-padding)));
+    --canvas-height: calc(100vh - var(--nav-height) - (2 * var(--module-padding)));
+  }
+
+  nav {
+    width: 100% !important;
+    justify-content: space-between;
+    padding: 0 8px;
+    position: sticky !important;
+    top: 0;
+    z-index: 1000;
+  }
+
+  nav .nav-item {
+    font-size: 12px;
+    padding: 0 6px;
+  }
+
+  nav img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .module {
+    will-change: height, max-height, width, max-width;
+  }
+
+  .canvas {
+    width: var(--module-width);
+    height: var(--canvas-height);
+    max-width: var(--module-width);
+    max-height: var(--canvas-height);
+    transition: width 0.6s ease, height 0.6s ease, max-width 0.6s ease, max-height 0.6s ease;
+  }
+
+  .mac-window {
+    width: 85vw !important;
+    height: 65vh !important;
+    max-width: 85vw;
+    max-height: 65vh;
+  }
+
+  .mac-window-content {
+    overflow: auto;
+  }
+
+  /* Condensed view when music player opens */
+  .module-condensed {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0;
+    width: calc(100vw - 16px) !important;
+    height: 350px !important;
+    max-width: 100%;
+    max-height: 350px;
+    transition: height 2s ease-in-out, max-height 2s ease-in-out;
+    overflow: hidden;
+    margin: 8px;
+  }
+
+  .module-condensed nav {
+    width: 100%;
+  }
+
+  .module-condensed .canvas {
+    display: none;
+  }
+
+  .module-condensed .mac-window:not(.music-player-window) {
+    display: none !important;
+  }
+
+  .module-condensed .canvas {
+    width: 100%;
+    height: calc(350px - 30px);
+  }
+
+  .music-player-window {
+    transition: left 1.8s ease-in-out, top 1.8s ease-in-out, transform 1.8s ease-in-out;
+  }
+
+  .module-condensed .music-player-window {
+    left: 0 !important;
+    top: 30px !important; /* account for nav height */
+    width: calc(100vw - 16px) !important;
+    height: calc(350px - 30px) !important;
+    max-width: calc(100vw - 16px);
+    max-height: calc(350px - 30px);
+    transform: none;
+  }
+
+}
+
 .module {
   border: 3px solid rgb(44, 44, 44);
   border-radius: 10px;
   /* Slightly adjusted 1% -> 4px for consistency */
   overflow: hidden;
-  width: 800px;
-  height: 600px;
+  width: var(--module-width);
+  height: var(--module-height);
+  max-width: var(--module-width);
+  max-height: var(--module-height);
   background-color: white;
   position: relative;
   z-index: 10;
   /* Changed from absolute to relative for React context usually, but keeping absolute if needed for centering? Body is flex center, so relative is better */
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+  margin: var(--module-padding);
+  transition: width 0.6s ease, height 0.6s ease, max-width 0.6s ease, max-height 0.6s ease;
 }
 
 /* Original styles below */
@@ -59,11 +175,14 @@ nav {
 
 .canvas {
   background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAaUlEQVQoU12PCw2AMAwFbzaGDLCBDXSgAxvYABlgY+RgWxqaLOnn+vqWgBE4+WIFNuCudUk1EZorYCsDF5Aa4OYelAowqCTg0GeodLhZ62yiXL8JTNFTJ9vNv6cG9JvhN68nAYdRaYmeHot9F9X2eFD0AAAAAElFTkSuQmCC") repeat;
-  width: 800px;
-  height: 570px;
+  width: var(--module-width);
+  height: var(--canvas-height);
+  max-width: var(--module-width);
+  max-height: var(--canvas-height);
   overflow: hidden;
   position: relative;
   /* Ensure absolute children are positioned relative to canvas */
+  transition: width 0.6s ease, height 0.6s ease, max-width 0.6s ease, max-height 0.6s ease;
 }
 
 .box a img {

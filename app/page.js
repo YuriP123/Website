@@ -17,6 +17,7 @@ export default function Home() {
   const [playingSong, setPlayingSong] = useState(null);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [showHiddenFiles, setShowHiddenFiles] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const videoRef = useRef(null);
   const musicPlayerPauseRef = useRef(null);
   const isMusicPlayingRef = useRef(false);
@@ -25,6 +26,7 @@ export default function Home() {
   const currentSongItem = playingSong ? findItemById(fileSystem, playingSong) : null;
   const shouldShowVideo = currentSongItem?.videoSrc ? true : false;
   const videoSource = currentSongItem?.videoSrc || null;
+  const isCondensed = isMobile && !!playingSong;
   
   // Keep previous video source during transitions to prevent unmounting
   const [displayVideoSource, setDisplayVideoSource] = useState(null);
@@ -77,17 +79,27 @@ export default function Home() {
     });
   };
 
+  // Track mobile viewport
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   const playSong = (songName) => {
     const songItem = findItemById(fileSystem, songName);
     
     // Set video source directly - no fade animations
     if (songItem?.videoSrc) {
-      setPlayingSong(songName);
-      setDisplayVideoSource(songItem.videoSrc);
+          setPlayingSong(songName);
+          setDisplayVideoSource(songItem.videoSrc);
     } else {
       // No video for this song
-      setPlayingSong(songName);
-      setDisplayVideoSource(null);
+        setPlayingSong(songName);
+        setDisplayVideoSource(null);
     }
   };
 
@@ -131,14 +143,14 @@ export default function Home() {
 
   const closeMusicPlayer = () => {
     setIsMusicPlaying(false);
-    setPlayingSong(null);
+        setPlayingSong(null);
     setDisplayVideoSource(null);
     
     // Pause and reset video if it exists
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
+        if (videoRef.current) {
+          videoRef.current.pause();
+          videoRef.current.currentTime = 0;
+        }
   };
 
   // Ensure video loads when source changes via React props
@@ -146,7 +158,7 @@ export default function Home() {
     if (!videoRef.current) return;
     const video = videoRef.current;
     const currentSrc = displayVideoSource || videoSource;
-    
+      
     // Wait for React to update the src attribute, then load
     if (currentSrc) {
       // Use a small timeout to ensure React has updated the src
@@ -166,7 +178,7 @@ export default function Home() {
                 });
               }
             }, 200);
-          }
+    }
         }
       }, 50);
       return () => clearTimeout(timeoutId);
@@ -332,7 +344,7 @@ export default function Home() {
     } else {
       // Pause when music is not playing
       if (video.src) {
-        video.pause();
+      video.pause();
       }
     }
   }, [isMusicPlaying, displayVideoSource, videoSource]);
@@ -390,7 +402,7 @@ export default function Home() {
           }
         }}
       />
-      <main className="module">
+      <main className={`module ${isCondensed ? 'module-condensed' : ''}`}>
         {screen === 'BIOS' && (
           <Bios onComplete={() => setScreen('PASSWORD')} />
         )}
@@ -473,8 +485,17 @@ export default function Home() {
                 src={findItemById(fileSystem, playingSong)?.src}
                 onClose={closeMusicPlayer}
                 onPlayingChange={handlePlayingChange}
-                position={windowPositions.MUSIC_PLAYER || { x: 300, y: 100 }}
-                onPositionChange={(pos) => updateWindowPosition('MUSIC_PLAYER', pos)}
+                condensed={isCondensed}
+                position={
+                  isCondensed
+                    ? { x: 0, y: 0 }
+                    : (windowPositions.MUSIC_PLAYER || { x: 300, y: 100 })
+                }
+                onPositionChange={
+                  isCondensed
+                    ? undefined
+                    : (pos) => updateWindowPosition('MUSIC_PLAYER', pos)
+                }
                 onFocus={() => bringToFront('MUSIC_PLAYER')}
                 onNextSong={handleNextSong}
                 onPrevSong={handlePrevSong}

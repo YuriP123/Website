@@ -11,6 +11,7 @@ export default function MusicPlayer({
   onPlayingChange, 
   position, 
   onPositionChange, 
+  condensed = false,
   controlsEnabled = true,
   onNextSong,
   onPrevSong,
@@ -308,18 +309,23 @@ export default function MusicPlayer({
     }, 2000);
   }, [onPrevSong]);
 
+  const playerWidth = condensed ? '100vw' : 400;
+  const playerHeight = condensed ? 'calc(350px - 30px)' : 280; // leave room for nav in condensed mode
+  const visualWidth = condensed ? 380 : 380;
+
   return (
     <Window
       title="Music Player"
       onClose={handleClose}
       style={{
         position: 'absolute',
-        width: 400,
-        height: 280,
-        minHeight: 280
+        width: playerWidth,
+        height: playerHeight,
+        minHeight: playerHeight
       }}
       position={position}
       onPositionChange={onPositionChange}
+      className={`music-player-window ${condensed ? 'is-condensed' : ''}`}
     >
       <div className="music-player">
         {currentAudioPath && (
@@ -336,7 +342,7 @@ export default function MusicPlayer({
         <div className="audio-visualizer" style={{ background: '#fff', border: '1px solid black', padding: 0 }}>
           <canvas
             ref={canvasRef}
-            width={380}
+            width={visualWidth}
             height={40}
             style={{ width: '100%', height: '100%', display: 'block' }}
           />
