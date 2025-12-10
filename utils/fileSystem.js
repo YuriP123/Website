@@ -27,7 +27,7 @@ export const fileSystem = [
     children: [
       {
         id: 'RESUME',
-        title: 'resume.txt',
+        title: 'resume.pdf',
         type: 'pdf',
         icon: withBase('/fileicon.png'),
         sprite: 'sprite-file',
@@ -44,6 +44,20 @@ export const fileSystem = [
     sprite: 'sprite-folder',
     windowSize: { w: 600, h: 400 },
     children: [
+      {
+        id: 'music-about',
+        title: 'README.txt',
+        type: 'file',
+        icon: withBase('/fileicon.png'),
+        sprite: 'sprite-file', // Class for sprite usage
+        windowSize: { w: 400, h: 400 },
+        content: `
+          <div id="message">
+            <p> Yes I make music! I make it for fun and for myself mostly bass house & uk garage. </p>
+            <p> I am just a beginner so I appreciate any feedback you have! </p>
+          </div>
+        `,
+      },
       {
         id: 'ec2a-test',
         title: 'ec2a-test.mp3',

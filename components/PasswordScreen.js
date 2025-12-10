@@ -16,7 +16,7 @@ export default function PasswordScreen({ onUnlock }) {
   };
 
   const handleHintClick = () => {
-    setHintText("Really....");
+    setHintText("hint: look around...");
   };
 
   return (
