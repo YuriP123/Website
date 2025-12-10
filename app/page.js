@@ -486,16 +486,8 @@ export default function Home() {
                 onClose={closeMusicPlayer}
                 onPlayingChange={handlePlayingChange}
                 condensed={isCondensed}
-                position={
-                  isCondensed
-                    ? { x: 0, y: 0 }
-                    : (windowPositions.MUSIC_PLAYER || { x: 300, y: 100 })
-                }
-                onPositionChange={
-                  isCondensed
-                    ? undefined
-                    : (pos) => updateWindowPosition('MUSIC_PLAYER', pos)
-                }
+                position={windowPositions.MUSIC_PLAYER || (isCondensed ? { x: 0, y: 0 } : { x: 300, y: 100 })}
+                onPositionChange={(pos) => updateWindowPosition('MUSIC_PLAYER', pos)}
                 onFocus={() => bringToFront('MUSIC_PLAYER')}
                 onNextSong={handleNextSong}
                 onPrevSong={handlePrevSong}

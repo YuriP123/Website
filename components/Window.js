@@ -30,52 +30,68 @@ export default function Window({ title, children, onClose, className = "", style
     // Only drag from titlebar, not from buttons
     if (e.target.closest('.mac-button')) return;
 
-    if (!windowRef.current || !onPositionChange) return;
+    startDrag(e.clientX, e.clientY);
+  };
 
-    const rect = windowRef.current.getBoundingClientRect();
-
-    setIsDragging(true);
-    // Calculate offset from mouse click position to window's top-left corner
-    setDragOffset({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    });
+  const handleTitleBarTouchStart = (e) => {
+    if (onFocus) onFocus();
+    if (e.target.closest('.mac-button')) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    startDrag(touch.clientX, touch.clientY);
   };
 
   const handleWindowMouseDown = () => {
     if (onFocus) onFocus();
   };
 
+  const startDrag = (clientX, clientY) => {
+    if (!windowRef.current || !onPositionChange) return;
+    const rect = windowRef.current.getBoundingClientRect();
+    setIsDragging(true);
+    setDragOffset({
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    });
+  };
+
   useEffect(() => {
     if (!isDragging || !onPositionChange) return;
 
-    const handleMouseMove = (e) => {
+    const handlePointerMove = (clientX, clientY) => {
       if (!windowRef.current) return;
 
-      // Find the module container (parent with class 'module')
       const moduleElement = windowRef.current.closest('.module');
       const parentRect = moduleElement?.getBoundingClientRect() || { left: 0, top: 0 };
 
-      // Calculate new position relative to module container
-      // Subtract dragOffset to maintain the same relative position from where user clicked
-      // Allow windows to be dragged outside - they'll be clipped by overflow: hidden
-      let newX = e.clientX - parentRect.left - dragOffset.x;
-      let newY = e.clientY - parentRect.top - dragOffset.y;
+      let newX = clientX - parentRect.left - dragOffset.x;
+      let newY = clientY - parentRect.top - dragOffset.y;
 
-      // No constraints - windows can be dragged anywhere, but will be clipped by parent overflow
       onPositionChange({ x: newX, y: newY });
     };
 
-    const handleMouseUp = () => {
-      setIsDragging(false);
+    const handleMouseMove = (e) => handlePointerMove(e.clientX, e.clientY);
+    const handleTouchMove = (e) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      e.preventDefault();
+      handlePointerMove(touch.clientX, touch.clientY);
     };
 
+    const endDrag = () => setIsDragging(false);
+
     window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('mouseup', endDrag);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', endDrag);
+    window.addEventListener('touchcancel', endDrag);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('mouseup', endDrag);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', endDrag);
+      window.removeEventListener('touchcancel', endDrag);
     };
   }, [isDragging, dragOffset, onPositionChange]);
 
@@ -98,10 +114,12 @@ export default function Window({ title, children, onClose, className = "", style
       className={`mac-window ${isOpening ? 'window-opening' : ''} ${isClosing ? 'window-closing' : ''} ${className}`}
       style={windowStyle}
       onMouseDown={handleWindowMouseDown}
+      onTouchStart={handleWindowMouseDown}
     >
       <div
         className="mac-window-titlebar"
         onMouseDown={handleTitleBarMouseDown}
+        onTouchStart={handleTitleBarTouchStart}
         style={{ cursor: onPositionChange ? 'grab' : 'default' }}
       >
         <button className="mac-button mac-button-close" onClick={handleClose} aria-label="Close"></button>
