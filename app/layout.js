@@ -1,4 +1,5 @@
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata = {
   title: "YuriOS",
@@ -13,6 +14,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body style={{ '--base-path': basePath, '--font-url': fontUrl }}>
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );
