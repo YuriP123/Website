@@ -15,6 +15,7 @@ export default function RootLayout({ children }) {
       <body style={{ '--base-path': basePath, '--font-url': fontUrl }}>
         {children}
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );
