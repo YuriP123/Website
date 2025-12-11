@@ -9,6 +9,7 @@ import Desktop from '@/components/Desktop';
 import MusicPlayer from '@/components/MusicPlayer';
 import FolderContent from '@/components/FolderContent';
 import FileViewer from '@/components/FileViewer';
+import CRTOverlay from '@/components/CRTOverlay';
 import { fileSystem, findItemById } from '@/utils/fileSystem';
 
 export default function Home() {
@@ -27,9 +28,44 @@ export default function Home() {
   const shouldShowVideo = currentSongItem?.videoSrc ? true : false;
   const videoSource = currentSongItem?.videoSrc || null;
   const isCondensed = isMobile && !!playingSong;
-  
+
   // Keep previous video source during transitions to prevent unmounting
   const [displayVideoSource, setDisplayVideoSource] = useState(null);
+  const [videoFadeClass, setVideoFadeClass] = useState('');
+  const videoFadeTimeoutRef = useRef(null);
+
+  // Handle fade in/out of video transitions
+  useEffect(() => {
+    // If no video should be shown, fade out and unset source
+    if (!shouldShowVideo && displayVideoSource) {
+      setVideoFadeClass('fade-out');
+      if (videoFadeTimeoutRef.current) clearTimeout(videoFadeTimeoutRef.current);
+      videoFadeTimeoutRef.current = setTimeout(() => {
+        setDisplayVideoSource(null);
+        setVideoFadeClass('');
+      }, 350); // fade duration ms: adjust if your CSS differs
+    }
+    // If a new video should be shown
+    if (shouldShowVideo && videoSource !== displayVideoSource) {
+      // Always fade out first, swap source, keep black until music confirms play
+      setVideoFadeClass('fade-out');
+      if (videoFadeTimeoutRef.current) clearTimeout(videoFadeTimeoutRef.current);
+      videoFadeTimeoutRef.current = setTimeout(() => {
+        setDisplayVideoSource(videoSource);
+        // Do NOT fade in here; wait for music playing state to drive fade-in
+      }, 300); // align with CSS fade-out
+    }
+    // eslint-disable-next-line
+  }, [shouldShowVideo, videoSource]);
+
+  // Cleanup fade timers on unmount
+  useEffect(() => {
+    return () => {
+      if (videoFadeTimeoutRef.current) {
+        clearTimeout(videoFadeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Track window positions - centralized or default to item config
   const [windowPositions, setWindowPositions] = useState({});
@@ -91,16 +127,22 @@ export default function Home() {
 
   const playSong = (songName) => {
     const songItem = findItemById(fileSystem, songName);
-    
-    // Set video source directly - no fade animations
-    if (songItem?.videoSrc) {
-          setPlayingSong(songName);
-          setDisplayVideoSource(songItem.videoSrc);
-    } else {
-      // No video for this song
-        setPlayingSong(songName);
-        setDisplayVideoSource(null);
+    const nextVideoSrc = songItem?.videoSrc || null;
+
+    // Always set the audio song immediately
+    setPlayingSong(songName);
+
+    // Clear any pending fade timers
+    if (videoFadeTimeoutRef.current) {
+      clearTimeout(videoFadeTimeoutRef.current);
     }
+
+    // Fade out current video, swap source; fade-in is controlled by playing state
+    setVideoFadeClass('fade-out');
+    videoFadeTimeoutRef.current = setTimeout(() => {
+      setDisplayVideoSource(nextVideoSrc);
+      // Keep black until music is playing; fade-in handled in playing/fade effects
+    }, 200);
   };
 
   // Get all music songs from MUSIC folder
@@ -113,13 +155,13 @@ export default function Home() {
   const handleNextSong = () => {
     const songs = getMusicSongs();
     if (songs.length === 0) return;
-    
+
     // Pause current song immediately before switching
     if (musicPlayerPauseRef.current) {
       musicPlayerPauseRef.current();
     }
     setIsMusicPlaying(false);
-    
+
     const currentIndex = songs.findIndex(song => song.id === playingSong);
     const nextIndex = currentIndex < songs.length - 1 ? currentIndex + 1 : 0;
     playSong(songs[nextIndex].id);
@@ -129,13 +171,13 @@ export default function Home() {
   const handlePrevSong = () => {
     const songs = getMusicSongs();
     if (songs.length === 0) return;
-    
+
     // Pause current song immediately before switching
     if (musicPlayerPauseRef.current) {
       musicPlayerPauseRef.current();
     }
     setIsMusicPlaying(false);
-    
+
     const currentIndex = songs.findIndex(song => song.id === playingSong);
     const prevIndex = currentIndex > 0 ? currentIndex - 1 : songs.length - 1;
     playSong(songs[prevIndex].id);
@@ -143,14 +185,15 @@ export default function Home() {
 
   const closeMusicPlayer = () => {
     setIsMusicPlaying(false);
-        setPlayingSong(null);
+    setPlayingSong(null);
     setDisplayVideoSource(null);
-    
+    setVideoFadeClass('fade-out');
+
     // Pause and reset video if it exists
-        if (videoRef.current) {
-          videoRef.current.pause();
-          videoRef.current.currentTime = 0;
-        }
+    if (videoRef.current) {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
   };
 
   // Ensure video loads when source changes via React props
@@ -158,14 +201,14 @@ export default function Home() {
     if (!videoRef.current) return;
     const video = videoRef.current;
     const currentSrc = displayVideoSource || videoSource;
-      
+
     // Wait for React to update the src attribute, then load
     if (currentSrc) {
       // Use a small timeout to ensure React has updated the src
       const timeoutId = setTimeout(() => {
         if (videoRef.current && videoRef.current.src) {
           videoRef.current.load();
-          
+
           // If music is already playing, try to play video after load
           if (isMusicPlayingRef.current) {
             setTimeout(() => {
@@ -178,7 +221,7 @@ export default function Home() {
                 });
               }
             }, 200);
-    }
+          }
         }
       }, 50);
       return () => clearTimeout(timeoutId);
@@ -191,13 +234,13 @@ export default function Home() {
 
   const handlePlayingChange = (isPlaying, songId) => {
     const songItem = songId ? findItemById(fileSystem, songId) : null;
-    
+
     // Track playing state for songs with video backgrounds
     // Always update isMusicPlaying based on isPlaying state if song has video
     if (songItem?.videoSrc) {
       isMusicPlayingRef.current = isPlaying;
       setIsMusicPlaying(isPlaying);
-      
+
       // If music just started playing, immediately try to play video
       // This is called in response to user interaction, so autoplay should work
       if (isPlaying) {
@@ -206,19 +249,19 @@ export default function Home() {
         requestAnimationFrame(() => {
           const video = videoRef.current;
           if (!video) return;
-          
+
           const tryPlay = () => {
             if (!video.src) {
               console.log('Video src not set yet');
               return;
             }
-            
+
             console.log('Attempting to play video, readyState:', video.readyState);
             video.play().then(() => {
               console.log('✅ Video started playing successfully!');
             }).catch((error) => {
               console.log('❌ Video play failed:', error.name, error.message);
-              
+
               // If not ready, wait for ready events
               if (video.readyState < 3) {
                 console.log('Video not ready, waiting for canplay...');
@@ -236,10 +279,10 @@ export default function Home() {
               }
             });
           };
-          
+
           // Try immediately
           tryPlay();
-          
+
           // Also try after delays
           setTimeout(tryPlay, 100);
           setTimeout(tryPlay, 300);
@@ -261,10 +304,10 @@ export default function Home() {
   // Sync video playback with music playing state - ensures video plays/pauses with music
   useEffect(() => {
     if (!videoRef.current) return;
-    
+
     const video = videoRef.current;
     const hasVideoSource = displayVideoSource || videoSource;
-    
+
     // If no video source, ensure video is paused
     if (!hasVideoSource) {
       video.pause();
@@ -280,7 +323,7 @@ export default function Home() {
           console.log('Video play attempt: no video or src');
           return;
         }
-        
+
         // Try to play regardless of readyState - browser will handle it
         currentVideo.play().then(() => {
           console.log('Video play successful in sync effect');
@@ -288,10 +331,10 @@ export default function Home() {
           console.log('Video play error in sync effect:', error.name, error.message);
         });
       };
-      
+
       // Try to play immediately
       attemptPlay();
-      
+
       // Set up listeners for when video becomes ready
       const handleCanPlay = () => {
         if (isMusicPlayingRef.current && videoRef.current && videoRef.current.src) {
@@ -302,7 +345,7 @@ export default function Home() {
           });
         }
       };
-      
+
       const handleLoadedData = () => {
         if (isMusicPlayingRef.current && videoRef.current && videoRef.current.src) {
           videoRef.current.play().then(() => {
@@ -312,7 +355,7 @@ export default function Home() {
           });
         }
       };
-      
+
       const handleLoadedMetadata = () => {
         if (isMusicPlayingRef.current && videoRef.current && videoRef.current.src) {
           videoRef.current.play().then(() => {
@@ -322,16 +365,16 @@ export default function Home() {
           });
         }
       };
-      
+
       video.addEventListener('canplay', handleCanPlay);
       video.addEventListener('loadeddata', handleLoadedData);
       video.addEventListener('loadedmetadata', handleLoadedMetadata);
-      
+
       // Also try multiple times as fallback
       const timeout1 = setTimeout(attemptPlay, 100);
       const timeout2 = setTimeout(attemptPlay, 300);
       const timeout3 = setTimeout(attemptPlay, 500);
-      
+
       // Cleanup
       return () => {
         video.removeEventListener('canplay', handleCanPlay);
@@ -344,8 +387,21 @@ export default function Home() {
     } else {
       // Pause when music is not playing
       if (video.src) {
-      video.pause();
+        video.pause();
       }
+    }
+  }, [isMusicPlaying, displayVideoSource, videoSource]);
+
+  // Fade in video once music starts and a video source exists
+  useEffect(() => {
+    const hasVideoSource = displayVideoSource || videoSource;
+    if (isMusicPlaying && hasVideoSource) {
+      setVideoFadeClass('fade-in');
+    } else if (!hasVideoSource) {
+      setVideoFadeClass('fade-out');
+    } else {
+      // On pause, keep video visible (maintain fade-in class)
+      setVideoFadeClass('fade-in');
     }
   }, [isMusicPlaying, displayVideoSource, videoSource]);
 
@@ -354,8 +410,8 @@ export default function Home() {
       {/* Background Video - always mounted to prevent ref issues */}
       <video
         ref={videoRef}
-        className="background-video"
-        style={{ display: (displayVideoSource || videoSource) ? 'block' : 'none' }}
+        className={`background-video ${videoFadeClass}`}
+        style={{ display: displayVideoSource ? 'block' : 'none' }}
         loop
         muted
         playsInline
@@ -366,7 +422,7 @@ export default function Home() {
           // When video loads, try to play if music is playing
           const video = videoRef.current;
           if (!video || !video.src) return;
-          
+
           // Use ref to check current playing state
           if (isMusicPlayingRef.current) {
             video.play().then(() => {
@@ -382,7 +438,7 @@ export default function Home() {
           // When video can play, try to play if music is playing
           const video = videoRef.current;
           if (!video || !video.src) return;
-          
+
           // Use ref to check current playing state
           if (isMusicPlayingRef.current) {
             video.play().then(() => {
@@ -398,11 +454,14 @@ export default function Home() {
           // Ensure video restarts if music player is still open and playing
           if (isMusicPlaying && (displayVideoSource || videoSource)) {
             e.target.currentTime = 0;
-            e.target.play().catch(() => {});
+            e.target.play().catch(() => { });
           }
         }}
       />
+
       <main className={`module ${isCondensed ? 'module-condensed' : ''}`}>
+        {/* CRT Screen Effects Overlay - only on module */}
+        <CRTOverlay />
         {screen === 'BIOS' && (
           <Bios onComplete={() => setScreen('PASSWORD')} />
         )}
@@ -416,11 +475,14 @@ export default function Home() {
 
         {screen === 'DESKTOP' && (
           <>
-            <Navbar 
+            <Navbar
               showHiddenFiles={showHiddenFiles}
-              onShowHiddenFiles={() => setShowHiddenFiles(!showHiddenFiles)} 
+              onShowHiddenFiles={() => setShowHiddenFiles(!showHiddenFiles)}
             />
-            <Desktop onOpenWindow={openWindow} showHiddenFiles={showHiddenFiles} />
+            <Desktop
+              onOpenWindow={openWindow}
+              showHiddenFiles={showHiddenFiles}
+            />
 
             {/* Dynamic Window Rendering */}
             {openWindows.map(id => {

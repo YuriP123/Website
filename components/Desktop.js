@@ -126,7 +126,7 @@ export default function Desktop({ onOpenWindow, showHiddenFiles }) {
           </div>
         );
       })}
-      
+
       {/* Hidden File - only show when showHiddenFiles is true */}
       {showHiddenFiles && (
         <div
