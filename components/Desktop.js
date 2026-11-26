@@ -6,7 +6,7 @@ import { fileSystem } from '@/utils/fileSystem';
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const withBase = (p) => (p?.startsWith('/') ? `${BASE_PATH}${p}` : p);
 
-const ICON_SIZE = 70; // px, used for simple clamping inside the canvas
+const ICON_SIZE = 80; // px, used for simple clamping inside the canvas
 
 export default function Desktop({ onOpenWindow, showHiddenFiles }) {
   const canvasRef = useRef(null);
@@ -119,7 +119,7 @@ export default function Desktop({ onOpenWindow, showHiddenFiles }) {
               style={{
                 backgroundImage: `url(${icon.icon})`,
                 backgroundPosition: '0 0',
-                backgroundSize: icon.type === 'file' ? '28px 72px' : '36px 58px', // Adjust if needed
+                backgroundSize: icon.type === 'file' ? '28px 72px' : (icon.type === 'wiki' ? '40px 40px' : '36px 58px'), // Adjust if needed
               }}
             />
             <h5>{icon.title}</h5>

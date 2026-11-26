@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "carcat",
+  "compatibility_date": "2026-11-19",
+  // Static Next.js export (next.config.mjs: output: 'export') -> ./out
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  },
+  "routes": [
+    { "pattern": "carcat.org", "custom_domain": true },
+    { "pattern": "www.carcat.org", "custom_domain": true }
+  ]
+}

@@ -6,7 +6,7 @@ export const fileSystem = [
     id: 'README',
     title: 'README.txt',
     type: 'file',
-    icon: withBase('/fileicon.png'),
+    icon: withBase('/images/fileicon.png'),
     sprite: 'sprite-file', // Class for sprite usage
     windowSize: { w: 400, h: 400 },
     content: `
@@ -21,7 +21,7 @@ export const fileSystem = [
     id: 'YURI',
     title: 'YuriTheDev',
     type: 'folder',
-    icon: withBase('/foldericon.png'),
+    icon: withBase('/images/foldericon.png'),
     sprite: 'sprite-folder',
     windowSize: { w: 600, h: 400 },
     children: [
@@ -29,7 +29,7 @@ export const fileSystem = [
         id: 'RESUME',
         title: 'resume.pdf',
         type: 'pdf',
-        icon: withBase('/fileicon.png'),
+        icon: withBase('/images/fileicon.png'),
         sprite: 'sprite-file',
         src: withBase('/media/YuriPasamonteResume2026.pdf'),
         windowSize: { w: 700, h: 600 },
@@ -40,7 +40,7 @@ export const fileSystem = [
     id: 'MUSIC',
     title: 'MUSIC',
     type: 'folder',
-    icon: withBase('/foldericon.png'),
+    icon: withBase('/images/foldericon.png'),
     sprite: 'sprite-folder',
     windowSize: { w: 600, h: 400 },
     children: [
@@ -48,7 +48,7 @@ export const fileSystem = [
         id: 'music-about',
         title: 'README.txt',
         type: 'file',
-        icon: withBase('/fileicon.png'),
+        icon: withBase('/images/fileicon.png'),
         sprite: 'sprite-file', // Class for sprite usage
         windowSize: { w: 400, h: 400 },
         content: `
@@ -62,7 +62,7 @@ export const fileSystem = [
         id: 'ec2a-test',
         title: 'ec2a-test.mp3',
         type: 'music',
-        icon: withBase('/soundicon.png'),
+        icon: withBase('/images/soundicon.png'),
         sprite: 'sprite-sound',
         src: withBase('/media/ec2atest.mp3'),
         videoSrc: withBase('/media/ec2avideo.mp4'), // Video background for this song
@@ -71,12 +71,20 @@ export const fileSystem = [
         id: 'whisper',
         title: 'whisper.mp3',
         type: 'music',
-        icon: withBase('/soundicon.png'),
+        icon: withBase('/images/soundicon.png'),
         sprite: 'sprite-sound',
         src: withBase('/media/whisper.mp3'),
         videoSrc: withBase('/media/whisper.mp4'), // Video background for this song
       },
     ],
+  },
+  {
+    id: 'WIKI',
+    title: 'Wiki',
+    type: 'wiki',
+    icon: withBase('/images/global.png'),
+    sprite: 'sprite-wiki',
+    windowSize: { w: 800, h: 600 },
   },
 ];
 

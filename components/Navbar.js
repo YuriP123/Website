@@ -91,7 +91,7 @@ export default function Navbar({ showHiddenFiles, onShowHiddenFiles }) {
             onClick={() => toggleDropdown('apple')}
           >
             <img
-              src={withBase('/pixel-banana.svg')}
+              src={withBase('/images/pixel-banana.svg')}
               alt="Banana"
               style={{ width: isMobile ? 16 : 22, height: isMobile ? 16 : 22, imageRendering: 'pixelated' }}
             />

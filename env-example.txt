@@ -1,0 +1,3 @@
+# Path to your local Org-roam directory
+# Do not use ~ for home directory, use absolute path: /Users/username/...
+ORG_ROAM_PATH="/path/to/your/org-roam-files"

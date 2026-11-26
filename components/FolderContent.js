@@ -17,7 +17,7 @@ export default function FolderContent({ items, onOpen }) {
             style={{
               backgroundImage: `url(${item.icon})`,
               backgroundPosition: '0 0',
-              backgroundSize: '28px 72px', // Default, might need adjustment per sprite
+              backgroundSize: item.type === 'file' ? '28px 72px' : (item.type === 'wiki' ? '40px 40px' : '36px 58px'),
             }}
           />
           <h5>{item.title}</h5>

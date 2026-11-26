@@ -10,6 +10,7 @@ import MusicPlayer from '@/components/MusicPlayer';
 import FolderContent from '@/components/FolderContent';
 import FileViewer from '@/components/FileViewer';
 import CRTOverlay from '@/components/CRTOverlay';
+import WikiLoadingScreen from '@/components/WikiLoadingScreen';
 import { fileSystem, findItemById } from '@/utils/fileSystem';
 
 export default function Home() {
@@ -19,6 +20,7 @@ export default function Home() {
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
   const [showHiddenFiles, setShowHiddenFiles] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [wikiTransition, setWikiTransition] = useState({ fading: false, loading: false });
   const videoRef = useRef(null);
   const musicPlayerPauseRef = useRef(null);
   const isMusicPlayingRef = useRef(false);
@@ -82,6 +84,17 @@ export default function Home() {
     if (type === 'music') {
       // Assume ID is song name for now based on fileSystem structure
       playSong(id);
+      return;
+    }
+
+    // Handle wiki application - trigger fade to black and loading screen
+    const item = findItemById(fileSystem, id);
+    if (item?.type === 'wiki' || id === 'WIKI') {
+      setWikiTransition({ fading: true, loading: false });
+      // After fade completes, show loading screen
+      setTimeout(() => {
+        setWikiTransition({ fading: true, loading: true });
+      }, 800);
       return;
     }
 
@@ -405,8 +418,24 @@ export default function Home() {
     }
   }, [isMusicPlaying, displayVideoSource, videoSource]);
 
+  // Handle wiki loading completion
+  const handleWikiLoadComplete = () => {
+    // Navigate to the digital garden
+    setWikiTransition({ fading: false, loading: false });
+    // Using window.location to force full navigation or router
+    window.location.href = '/wiki';
+  };
+
   return (
     <>
+      {/* Wiki fade overlay */}
+      <div className={`wiki-fade-overlay ${wikiTransition.fading ? 'active' : ''}`} />
+
+      {/* Wiki loading screen */}
+      {wikiTransition.loading && (
+        <WikiLoadingScreen onComplete={handleWikiLoadComplete} />
+      )}
+
       {/* Background Video - always mounted to prevent ref issues */}
       <video
         ref={videoRef}
