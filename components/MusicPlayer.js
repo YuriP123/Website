@@ -347,12 +347,13 @@ export default function MusicPlayer({
         <div className="divider"></div>
 
         {/* Playback Time */}
-        <div className="playback-time">
+        {/* translate="no": the time ticks every second and song names are titles */}
+        <div className="playback-time" translate="no">
           {formatTime(currentTime)} / {formatTime(duration)}
         </div>
 
         {/* Song Info */}
-        <div className="song-info">
+        <div className="song-info" translate="no">
           <div className="song-title">
             {songName.replace(/-/g, ' ').toUpperCase()}
           </div>

@@ -100,7 +100,7 @@ export default function Navbar({ showHiddenFiles, onShowHiddenFiles }) {
           <a className="nav-item" style={isMobile ? { padding: '0 4px', fontSize: 11 } : {}} onClick={() => toggleDropdown('edit')}>Edit</a>
           <a className="nav-item" style={isMobile ? { padding: '0 4px', fontSize: 11 } : {}} onClick={() => toggleDropdown('special')}>Special</a>
         </div>
-        <p id='time' style={isMobile ? { paddingRight: 2, fontSize: 11, whiteSpace: 'nowrap' } : {}}>{isMobile ? timeShort : timeFull}</p>
+        <p id='time' translate='no' style={isMobile ? { paddingRight: 2, fontSize: 11, whiteSpace: 'nowrap' } : {}}>{isMobile ? timeShort : timeFull}</p>
       </nav>
 
       {activeDropdown === 'apple' && (

@@ -155,5 +155,6 @@ export default function SpinningLogo() {
     return () => cancelAnimationFrame(raf);
   }, []);
 
-  return <pre ref={preRef} className="spinning-logo" aria-label="Yuri logo" />;
+  // translate="no": it's ASCII art redrawn every frame, not words
+  return <pre ref={preRef} className="spinning-logo" aria-label="Yuri logo" translate="no" />;
 }

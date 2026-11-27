@@ -1665,151 +1665,390 @@ nav {
 }
 
 /* ============================================
-   WIKI INTERFACE STYLES
+   DIGITAL UNIVERSE (WikiStack)
+   Night version of the YuriOS desktop: classic Macintosh windows
+   (striped title bars, close boxes, Chicago chrome, Monaco text)
+   drawn in white phosphor on black, with glowing edges.
    ============================================ */
 
-/* Doom Emacs / Org-mode Theme */
-.wiki-container {
-  display: flex;
+.universe {
+  --universe-ink: #e4e4e4;
+  --universe-bright: #ffffff;
+  --universe-muted: #8f8f8f;
+  --universe-paper: rgba(9, 9, 11, 0.9);
+  --universe-line: rgba(255, 255, 255, 0.95);
+  --universe-line-soft: rgba(255, 255, 255, 0.5);
+  --universe-glow:
+    0 0 4px rgba(255, 255, 255, 0.7),
+    0 0 14px rgba(255, 255, 255, 0.35),
+    0 0 40px rgba(255, 255, 255, 0.15);
+  --universe-text-glow: 0 0 2px rgba(255, 255, 255, 0.35);
+  --universe-mono: 'Monaco', 'Menlo', ui-monospace, 'Courier New', monospace;
+
+  position: relative;
   height: 100vh;
+  height: 100dvh;
   width: 100vw;
   overflow: hidden;
-  background-color: #21242b;
-  /* Doom One background */
-  color: #bbc2cf;
-  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  /* Editor font */
+  /* Faint glow in the middle of the "screen" */
+  background-color: #000000;
+  background-image: radial-gradient(ellipse at 50% 40%, rgba(255, 255, 255, 0.07), transparent 70%);
+  color: var(--universe-ink);
+  font-weight: normal;
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
 }
 
-/* Sidebar */
-.wiki-sidebar {
+.universe.visible {
+  opacity: 1;
+}
+
+/* The desktop's dithered pattern, inverted */
+.universe::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAaUlEQVQoU12PCw2AMAwFbzaGDLCBDXSgAxvYABlgY+RgWxqaLOnn+vqWgBE4+WIFNuCudUk1EZorYCsDF5Aa4OYelAowqCTg0GeodLhZ62yiXL8JTNFTJ9vNv6cG9JvhN68nAYdRaYmeHot9F9X2eFD0AAAAAElFTkSuQmCC") repeat;
+  filter: invert(1);
+  opacity: 0.13;
+}
+
+.universe ::selection {
+  background: var(--universe-bright);
+  color: #000000;
+  text-shadow: none;
+}
+
+/* CRT layers, tuned for a dark screen */
+.universe-crt {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.universe .crt-scanlines {
+  background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.22) 50%);
+  background-size: 100% 3px;
+}
+
+.universe .crt-vignette {
+  background: radial-gradient(ellipse at center, transparent 55%, rgba(0, 0, 0, 0.5) 100%);
+}
+
+/* Scrollbars: thin phosphor bars instead of the grey desktop ones */
+.universe,
+.universe * {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) transparent;
+}
+
+.universe ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: transparent;
+}
+
+.universe ::-webkit-scrollbar-track,
+.universe ::-webkit-scrollbar-corner {
+  background: transparent;
+  background-image: none;
+  border: none;
+  box-shadow: none;
+}
+
+.universe ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: none;
+}
+
+.universe ::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* Floating button back to the desktop */
+.universe-desktop-button {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 100;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--universe-paper);
+  border: 1px solid var(--universe-line);
+  border-radius: 6px;
+  box-shadow: var(--universe-glow), inset 0 0 6px rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.universe-desktop-icon {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+  filter: invert(1) drop-shadow(0 0 3px rgba(255, 255, 255, 0.6));
+}
+
+.universe-desktop-button:hover,
+.universe-desktop-button:focus-visible {
+  background: var(--universe-bright);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.6), 0 0 36px rgba(255, 255, 255, 0.2);
+  outline: none;
+}
+
+.universe-desktop-button:hover .universe-desktop-icon,
+.universe-desktop-button:focus-visible .universe-desktop-icon {
+  filter: none;
+}
+
+.universe-desktop-button:active {
+  transform: translate(1px, 1px);
+}
+
+/* Horizontal row of windows; newest on the right */
+.universe-panes {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 24px;
+  height: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* Left gutter keeps the windows clear of the desktop button */
+  padding: 16px 24px 28px 78px;
+  scroll-snap-type: x proximity;
+}
+
+.universe-pane {
   flex-shrink: 0;
-  width: 250px;
-  background-color: #282c34;
-  border-right: 1px solid #1b1d23;
+  width: 600px;
+  max-width: 92vw;
   display: flex;
   flex-direction: column;
-  z-index: 50;
-  font-size: 0.9rem;
-}
-
-.wiki-sidebar-header {
-  padding: 15px;
-  background-color: #21242b;
-  border-bottom: 2px solid #51afef;
-  /* Blue accent */
-  color: #51afef;
-  font-weight: bold;
-}
-
-.wiki-sidebar-header h2 {
-  font-size: 1.1rem;
-  margin: 0;
-  text-align: center;
-  letter-spacing: 1px;
-  font-family: inherit;
-}
-
-.wiki-category h3 {
-  font-size: 0.85rem;
-  color: #c678dd;
-  /* Purple for keywords/categories */
-  margin: 15px 0 5px 15px;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.wiki-category li a {
-  display: block;
-  padding: 4px 15px;
-  color: #98be65;
-  /* Green strings/constants */
-  text-decoration: none;
-  transition: background 0.2s;
-}
-
-.wiki-category li a:hover {
-  background-color: #3e4451;
-  color: #fff;
-}
-
-.wiki-nav-home {
-  margin: 10px;
-  padding: 8px;
-  background: #3e4451;
-  color: #da8548;
-  /* Orange */
-  text-align: center;
-  border-radius: 4px;
-  border: 1px solid #1b1d23;
-  text-decoration: none;
-  display: block;
-}
-
-.wiki-nav-home:hover {
-  background: #5c6370;
-  color: #fff;
-}
-
-/* Content Area - Panes Container */
-.wiki-content-area {
-  flex-grow: 1;
-  height: 100%;
   overflow: hidden;
+  background: var(--universe-paper);
+  border: 1px solid var(--universe-line);
+  border-radius: 6px;
+  box-shadow:
+    var(--universe-glow),
+    inset 0 0 6px rgba(255, 255, 255, 0.25),
+    inset 0 0 32px rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  scroll-snap-align: start;
+  transform-origin: bottom left;
+  animation: macWindowOpen 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.universe-spacer {
+  width: 1px;
+  flex-shrink: 0;
+}
+
+/* Title bar: close box, stripes, title, stripes */
+.universe-titlebar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 24px;
+  padding: 4px 8px;
+  background: linear-gradient(to bottom, #1b1b1e, #0e0e10);
+  border-bottom: 1px solid var(--universe-line);
+  user-select: none;
+}
+
+.universe-close {
+  flex-shrink: 0;
   position: relative;
-  background-color: #21242b;
+  width: 13px;
+  height: 13px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--universe-line);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.35);
+  cursor: pointer;
 }
 
-/* Individual Note Pane Styling */
-.wiki-prose {
-  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #bbc2cf;
+.universe-close:hover,
+.universe-close:focus-visible {
+  background: var(--universe-bright);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+  outline: none;
 }
 
-/* Headers - Green/Blue hierarchy like Org mode */
-.wiki-prose h1 {
-  color: #51afef;
-  /* Blue (Level 1) */
-  font-size: 1.4em;
+.universe-close:active {
+  background: transparent;
+  box-shadow: inset 0 0 0 2px var(--universe-bright), 0 0 8px rgba(255, 255, 255, 0.7);
+}
+
+.universe-titlebar-spacer {
+  flex-shrink: 0;
+  width: 13px;
+}
+
+/* System 7 style: a band of fine lines either side of the title */
+.universe-titlebar-stripes {
+  flex: 1 1 0;
+  min-width: 12px;
+  height: 11px;
+  background-image: repeating-linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.55) 0px,
+      rgba(255, 255, 255, 0.55) 1px,
+      transparent 1px,
+      transparent 2px);
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.35));
+}
+
+.universe-title {
+  flex: 0 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding: 0 4px;
+  font-family: 'Chicago', sans-serif;
+  font-size: 12px;
   font-weight: bold;
-  margin-top: 0.5em;
-  margin-bottom: 0.3em;
+  line-height: 1.3;
+  text-align: center;
+  color: var(--universe-bright);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.55);
+  overflow-wrap: anywhere;
+}
+
+/* Finder-style info strip under the title bar */
+.universe-pane-info {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 16px;
+  padding: 3px 10px;
+  border-bottom: 3px double var(--universe-line-soft);
+  font-family: 'Chicago', sans-serif;
+  font-size: 10px;
+  color: #bdbdbd;
+}
+
+.universe-pane-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px 16px 8px;
+}
+
+.universe-loading {
+  padding: 2rem;
+  text-align: center;
+  font-family: var(--universe-mono);
+  font-size: 13px;
+  text-shadow: var(--universe-text-glow);
+}
+
+/* Cards: each top-level org heading and its content */
+.universe-card {
+  border: 1px solid var(--universe-line-soft);
+  border-radius: 3px;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.18), inset 0 0 12px rgba(255, 255, 255, 0.04);
+  padding: 14px 16px;
+  margin-bottom: 18px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.universe-card > h1:first-child,
+.universe-card > h2:first-child {
+  margin-top: 0;
+}
+
+/* ---------- Note text ---------- */
+.wiki-prose {
+  font-family: var(--universe-mono);
+  font-size: 13px;
+  font-weight: normal;
+  line-height: 1.6;
+  color: var(--universe-ink);
+  text-shadow: var(--universe-text-glow);
+}
+
+.wiki-prose h1,
+.wiki-prose h2,
+.wiki-prose h3,
+.wiki-prose h4,
+.wiki-prose h5,
+.wiki-prose h6 {
+  font-family: 'Chicago', sans-serif;
+  font-weight: bold;
+  line-height: 1.3;
+  color: var(--universe-bright);
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.45);
+}
+
+/* Card headings read as a selected (inverted) label */
+.wiki-prose h1 {
+  display: inline-block;
+  margin: 0.6em 0 0.3em;
+  padding: 1px 6px;
+  font-size: 15px;
+  background-color: var(--universe-bright);
+  color: #000000;
+  text-shadow: none;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
+}
+
+.wiki-prose h1 + * {
+  margin-top: 0.6em;
 }
 
 .wiki-prose h2 {
-  color: #98be65;
-  /* Green (Level 2) */
-  font-size: 1.25em;
-  font-weight: bold;
-  margin-top: 1.2em;
+  margin: 1.2em 0 0.4em;
+  font-size: 14px;
+  border-bottom: 1px solid var(--universe-line-soft);
+  padding-bottom: 2px;
 }
 
 .wiki-prose h3 {
-  color: #da8548;
-  /* Orange (Level 3) */
-  font-size: 1.1em;
-  font-weight: bold;
-  margin-top: 1em;
+  margin: 1em 0 0.3em;
+  font-size: 13px;
 }
 
-.wiki-prose h4 {
-  color: #c678dd;
-  /* Purple (Level 4) */
-  font-weight: bold;
+.wiki-prose h4,
+.wiki-prose h5,
+.wiki-prose h6 {
+  margin: 1em 0 0.3em;
+  font-size: 12px;
 }
 
-/* Lists and Indentation */
+/* Heading anchor links (rehype-autolink-headings) stay heading-coloured */
+.wiki-prose :is(h1, h2, h3, h4, h5, h6) a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.wiki-prose :is(h1, h2, h3, h4, h5, h6) a:hover {
+  background: none;
+  box-shadow: none;
+}
+
+.wiki-prose p {
+  margin-bottom: 0.75em;
+}
+
 .wiki-prose ul {
-  list-style-type: disc !important;
+  list-style-type: square !important;
   padding-left: 1.5em !important;
   margin-bottom: 1em;
 }
 
 .wiki-prose ol {
   list-style-type: decimal !important;
-  padding-left: 1.5em !important;
+  padding-left: 1.75em !important;
   margin-bottom: 1em;
 }
 
@@ -1818,263 +2057,177 @@ nav {
   padding-left: 0.2em;
 }
 
-/* Custom list markers to look like org mode */
-.wiki-prose ul>li::marker {
-  color: #51afef;
+.wiki-prose li::marker {
+  color: var(--universe-bright);
 }
 
-/* Links */
+.wiki-prose strong,
+.wiki-prose b {
+  font-weight: bold;
+  color: var(--universe-bright);
+}
+
+/* Links invert like menu items on hover */
 .wiki-prose a {
-  color: #51afef;
+  color: var(--universe-bright);
   text-decoration: underline;
   text-decoration-style: dotted;
-  text-underline-offset: 4px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: rgba(255, 255, 255, 0.7);
+  text-underline-offset: 3px;
 }
 
 .wiki-prose a:hover {
-  background-color: #3e4451;
-  color: #ffffff;
+  background-color: var(--universe-bright);
+  color: #000000;
+  text-shadow: none;
+  text-decoration-style: solid;
+  text-decoration-color: #000000;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
 }
 
-/* Code Blocks */
 .wiki-prose pre {
-  background: #1b1d23;
-  padding: 1em;
-  border-radius: 4px;
-  border: 1px solid #3e4451;
-  overflow-x: auto;
-  font-family: 'Menlo', monospace;
   margin: 1em 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  background: #000000;
+  color: #f2f2f2;
+  border: 1px solid var(--universe-line-soft);
+  border-radius: 3px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1), inset 0 0 16px rgba(255, 255, 255, 0.04);
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+  font-family: var(--universe-mono);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .wiki-prose code {
-  background: #2c323c;
-  padding: 2px 5px;
-  border-radius: 3px;
-  color: #c678dd;
+  padding: 0 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-family: var(--universe-mono);
+  font-size: 0.95em;
 }
 
-/* Blockquotes / Drawers look */
-.wiki-prose blockquote {
-  border-left: 3px solid #5c6370;
-  padding-left: 1em;
-  color: #5c6370;
-  font-style: italic;
-}
-
-/* Images */
-.wiki-prose img {
-  max-width: 100%;
-  border: 1px solid #3e4451;
-  margin: 1em 0;
-}
-
-/* Timestamp / Metadata */
-.wiki-meta {
-  color: #5c6370;
-  font-size: 0.85em;
-  margin-top: 0.5em;
-  font-style: italic;
-}
-
-.wiki-article {
-  max-width: none;
-}
-/* ============================================
-   DIGITAL GARDEN (WikiStack)
-   Card layout after commonplace.doubleloop.net, in the Doom One palette.
-   ============================================ */
-
-.garden {
-  height: 100vh;
-  height: 100dvh;
-  width: 100vw;
-  overflow: hidden;
-  background-color: #21242b;
-  color: #bbc2cf;
-  opacity: 0;
-  transition: opacity 0.6s ease-in-out;
-}
-
-.garden.visible {
-  opacity: 1;
-}
-
-.garden-desktop-button {
-  position: fixed;
-  top: 16px;
-  left: 16px;
-  z-index: 100;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  line-height: 1;
-  background: #3e4451;
-  border: 1px solid #51afef;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
-}
-
-.garden-desktop-button:hover {
-  background: #51afef;
-  transform: scale(1.06);
-}
-
-/* Horizontal row of note columns; newest pane on the right */
-.garden-panes {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  gap: 24px;
-  height: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 72px 16px 0 76px;
-  scroll-snap-type: x proximity;
-}
-
-.garden-pane {
-  flex-shrink: 0;
-  width: 600px;
-  max-width: 92vw;
-  height: 100%;
-  overflow-y: auto;
-  padding-bottom: 48px;
-  scroll-snap-align: start;
-}
-
-.garden-spacer {
-  width: 32px;
-  flex-shrink: 0;
-}
-
-/* Cards: each top-level org heading and its content */
-.garden-card {
-  background-color: #282c34;
-  border: 2px dotted #5c6370;
-  border-radius: 4px;
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 1.25rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-}
-
-.garden-card > h1:first-child,
-.garden-card > h2:first-child {
-  margin-top: 0;
-}
-
-.garden .wiki-prose .garden-card > h1 {
-  display: inline-block;
-  padding: 0 0.35em;
-  background-color: rgba(81, 175, 239, 0.12);
-  border-radius: 2px;
-}
-
-.garden .wiki-prose .garden-card > h1 + * {
-  margin-top: 0.6em;
-}
-
-.garden .wiki-prose p {
-  margin-bottom: 0.75em;
-}
-
-/* Pane header card: title, close button, planted / tended dates */
-.garden-pane-header {
-  border-width: 3px;
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-
-.garden-pane-title-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.garden-pane-header h1 {
-  margin: 0;
-  color: #51afef;
-  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: 1.3rem;
-  font-weight: bold;
-  line-height: 1.3;
-}
-
-.garden-close {
+.wiki-prose pre code {
+  padding: 0;
   background: none;
   border: none;
-  color: #5c6370;
-  cursor: pointer;
-  font-size: 22px;
-  line-height: 1;
+  color: inherit;
 }
 
-.garden-close:hover {
-  color: #ff6c6b;
-}
-
-.garden-dates {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 10px;
-  padding: 2px 8px;
-  border: 1px dashed #5c6370;
-  font-family: 'Menlo', 'Monaco', monospace;
-  font-size: 11px;
-  color: #5c6370;
-}
-
-.garden-loading {
-  padding: 2rem;
-  text-align: center;
-  color: #5c6370;
+.wiki-prose blockquote {
+  margin: 1em 0;
+  padding: 2px 0 2px 1em;
+  border-left: 3px solid var(--universe-line);
+  box-shadow: -4px 0 8px -6px rgba(255, 255, 255, 0.6);
+  color: #bdbdbd;
   font-style: italic;
-  font-family: 'Menlo', 'Monaco', monospace;
 }
 
-.garden-elsewhere h2,
-.garden-stream-day h2 {
+.wiki-prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.wiki-prose hr {
+  margin: 1.25em 0;
+  border: none;
+  border-top: 1px solid var(--universe-line-soft);
+}
+
+.wiki-prose img {
+  max-width: 100%;
+  margin: 1em 0;
+  border: 1px solid var(--universe-line-soft);
+}
+
+.wiki-prose table {
+  margin: 1em 0;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.wiki-prose th,
+.wiki-prose td {
+  padding: 3px 8px;
+  border: 1px solid var(--universe-line-soft);
+  text-align: left;
+}
+
+.wiki-prose th {
+  background-color: rgba(255, 255, 255, 0.08);
+  font-family: 'Chicago', sans-serif;
+  font-size: 11px;
+}
+
+/* ---------- Elsewhere, stream, notes index ---------- */
+.universe-elsewhere h2,
+.universe-stream-day h2 {
   margin-top: 0;
-  font-size: 1rem;
-  color: #5c6370;
+  font-size: 13px;
 }
 
-.garden-elsewhere h3 {
+.universe-elsewhere h3 {
   margin: 1em 0 0.25em;
-  font-size: 0.85rem;
+  font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #5c6370;
 }
 
-.garden-elsewhere p,
-.garden-elsewhere ul {
+.universe-elsewhere p,
+.universe-elsewhere ul {
   margin-top: 0.25em;
   margin-bottom: 0;
-  font-size: 0.9rem;
+  font-size: 12px;
   overflow-wrap: anywhere;
 }
 
-/* Webmentions (Elsewhere > Mentions) */
-.garden-elsewhere .mentions-group h4 {
-  margin: 0.75em 0 0.35em;
-  font-size: 0.8rem;
-  font-weight: normal;
-  color: #5c6370;
+/* {{{universe-graph}}}: the SVG is drawn black on white, so invert it here */
+.universe .wiki-prose .universe-graph {
+  margin: 1em 0;
+  border: 1px solid var(--universe-line-soft);
+  border-radius: 3px;
+  overflow: hidden;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.12);
 }
 
-.garden-elsewhere .mention-responses {
-  list-style: none;
-  padding: 0.4em 0.6em;
-  border: 1px dotted #5c6370;
+.universe-graph svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: invert(1) drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+}
+
+.universe-notes-count {
+  font-weight: normal;
+  opacity: 0.7;
+}
+
+.universe-stream-kind,
+.universe-rc-date {
+  display: inline-block;
+  min-width: 7.5em;
+  color: var(--universe-muted);
+}
+
+.universe-stream-author {
+  color: var(--universe-muted);
+}
+
+.universe-stream-source {
+  text-decoration: none !important;
+}
+
+/* Webmentions (Elsewhere > Mentions) */
+.universe-elsewhere .mentions-group h4 {
+  margin: 0.75em 0 0.35em;
+  font-size: 11px;
+}
+
+.universe-elsewhere .mention-responses {
+  list-style: none !important;
+  padding: 0.4em 0.6em !important;
+  border: 1px dotted var(--universe-line-soft);
 }
 
 .mention-responses li {
@@ -2086,15 +2239,14 @@ nav {
 }
 
 .mention-date {
-  color: #5c6370;
-  font-size: 0.8rem;
+  color: var(--universe-muted);
+  font-size: 11px;
 }
 
 .mention-content {
   flex-basis: 100%;
   margin: 0.15em 0 0.3em 30px !important;
-  color: #abb2bf;
-  font-size: 0.85rem;
+  font-size: 12px;
 }
 
 .mention-reactions {
@@ -2107,69 +2259,50 @@ nav {
   display: inline-flex;
   align-items: center;
   gap: 2px;
-  text-decoration: none;
-  font-size: 0.85rem;
+  text-decoration: none !important;
+  font-size: 12px;
 }
 
 .mention-avatar {
   width: 24px;
   height: 24px;
-  border-radius: 2px;
   object-fit: cover;
   flex-shrink: 0;
+  border: 1px solid var(--universe-line-soft);
+  filter: grayscale(1) contrast(1.1);
 }
 
 .mention-avatar-blank {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #3e4451;
-  color: #5c6370;
+  background: rgba(255, 255, 255, 0.1);
   font-size: 12px;
-}
-
-.garden-stream-kind {
-  display: inline-block;
-  min-width: 6.5em;
-  color: #5c6370;
-}
-
-.garden-stream-author,
-.garden-author {
-  color: #5c6370;
-}
-
-.garden-author {
-  margin-top: 4px;
-  font-size: 0.9rem;
-}
-
-.garden-stream-source {
-  text-decoration: none;
-}
-
-.garden-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  font-size: 12px;
-  color: #5c6370;
-}
-
-.garden-rc-date {
-  display: inline-block;
-  min-width: 7.5em;
-  color: #5c6370;
 }
 
 @media (max-width: 768px) {
-  .garden-panes {
-    padding: 72px 12px 0 12px;
-    gap: 12px;
+  .universe-desktop-button {
+    top: 12px;
+    left: 12px;
+    width: 40px;
+    height: 40px;
   }
 
-  .garden-pane {
-    width: calc(100vw - 24px);
+  .universe-panes {
+    gap: 14px;
+    padding: 66px 12px 16px 12px;
+  }
+
+  .universe-pane {
+    width: calc(100vw - 28px);
     max-width: none;
+  }
+
+  .universe-pane-body {
+    padding: 12px 10px 6px;
+  }
+
+  .universe-card {
+    padding: 12px;
   }
 }

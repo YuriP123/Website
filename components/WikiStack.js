@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Mentions, { useWebmentions } from "./Mentions";
+import CRTOverlay from "./CRTOverlay";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 // Opens as a pane through handleContentClick, like every /wiki/ link
@@ -41,11 +42,11 @@ function Elsewhere({ note }) {
   if (!hasStatic && !mentions?.length) return null;
 
   return (
-    <section className="garden-card garden-elsewhere">
+    <section className="universe-card universe-elsewhere">
       <h2>Elsewhere</h2>
       {note.backlinks?.length > 0 && (
         <>
-          <h3>In my garden</h3>
+          <h3>In my universe</h3>
           <p>Notes that link to this note.</p>
           <ul>
             {note.backlinks.map((b) => (
@@ -71,7 +72,7 @@ function Elsewhere({ note }) {
         <>
           <h3>In the stream</h3>
           <p>
-            Planted on {formatDate(note.planted)}. See what else was planted in
+            Created on {formatDate(note.planted)}. See what else was created in
             the <a href={`/wiki/${STREAM_SLUG}`}>stream</a>.
           </p>
         </>
@@ -87,7 +88,6 @@ export default function WikiStack({ initialNote }) {
   const [isVisible, setIsVisible] = useState(false);
   const [restored, setRestored] = useState(false);
   const containerRef = useRef(null);
-  const router = useRouter();
 
   // Fade in on mount
   useEffect(() => {
@@ -169,58 +169,78 @@ export default function WikiStack({ initialNote }) {
   };
 
   return (
-    <div className={`garden ${isVisible ? "visible" : ""}`}>
-      <button
-        className="garden-desktop-button"
-        onClick={() => router.push("/")}
+    <div className={`universe ${isVisible ? "visible" : ""}`}>
+      <div className="universe-crt">
+        <CRTOverlay />
+      </div>
+
+      <Link
+        href="/"
+        className="universe-desktop-button"
         title="Back to desktop"
         aria-label="Back to desktop"
       >
-        🏠
-      </button>
+        <img
+          src={`${BASE_PATH}/images/pixel-banana.svg`}
+          alt=""
+          className="universe-desktop-icon"
+        />
+      </Link>
 
-      <div ref={containerRef} className="garden-panes">
+      <div ref={containerRef} className="universe-panes">
         {stack.map((note, index) => (
           <article
             key={note.slug}
             id={`pane-${note.slug}`}
-            className="garden-pane"
+            className="universe-pane"
           >
-            <header className="garden-card garden-pane-header">
-              <div className="garden-pane-title-row">
-                <h1>{note.loading ? "Loading…" : note.title}</h1>
-                {index > 0 && (
-                  <button
-                    className="garden-close"
-                    onClick={() =>
-                      setStack((s) => s.filter((_, i) => i !== index))
-                    }
-                    aria-label="Close note"
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-              {!note.loading && note.author && (
-                <div className="garden-author">by {note.author}</div>
+            <header className="universe-titlebar">
+              {index > 0 ? (
+                <button
+                  className="universe-close"
+                  onClick={() =>
+                    setStack((s) => s.filter((_, i) => i !== index))
+                  }
+                  aria-label="Close note"
+                  title="Close"
+                />
+              ) : (
+                <span className="universe-titlebar-spacer" />
               )}
-              {!note.loading && (note.planted || note.tended) && (
-                <div className="garden-dates">
+              <span className="universe-titlebar-stripes" />
+              <h1 className="universe-title">
+                {/* Keyed spans so React swaps elements instead of editing a
+                    text node a browser translator may have replaced */}
+                {note.loading ? (
+                  <span key="loading">Loading…</span>
+                ) : (
+                  <span key="title">{note.title}</span>
+                )}
+              </h1>
+              <span className="universe-titlebar-stripes" />
+              <span className="universe-titlebar-spacer" />
+            </header>
+
+            {!note.loading &&
+              (note.author || note.planted || note.tended) && (
+                <div className="universe-pane-info">
+                  {note.author && <span>by {note.author}</span>}
                   {note.planted && (
-                    <span>planted: {formatDate(note.planted)}</span>
+                    <span>created {formatDate(note.planted)}</span>
                   )}
                   {note.tended && (
-                    <span>last tended: {formatDate(note.tended)}</span>
+                    <span>updated {formatDate(note.tended)}</span>
                   )}
                 </div>
               )}
-            </header>
 
             {note.loading ? (
-              <div className="garden-loading">Fetching knowledge…</div>
+              <div className="universe-loading">
+                Fetching knowledge<span className="blinking">_</span>
+              </div>
             ) : (
               <div
-                className="garden-pane-body wiki-prose"
+                className="universe-pane-body wiki-prose"
                 onClick={handleContentClick}
               >
                 <div dangerouslySetInnerHTML={{ __html: note.html }} />
@@ -232,7 +252,7 @@ export default function WikiStack({ initialNote }) {
         ))}
 
         {/* Spacer for comfortable scrolling */}
-        <div className="garden-spacer" />
+        <div className="universe-spacer" />
       </div>
     </div>
   );

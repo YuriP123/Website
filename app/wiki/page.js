@@ -4,8 +4,8 @@ import { renderNote } from '@/lib/org-api';
 export default async function WikiRoot() {
   const initialNote = (await renderNote('index')) || {
     slug: 'index',
-    title: 'Digital Garden',
-    html: '<section class="garden-card"><p>Nothing planted yet.</p></section>',
+    title: 'Digital Universe',
+    html: '<section class="universe-card"><p>Nothing here yet.</p></section>',
     tags: [],
     planted: null,
     tended: null,

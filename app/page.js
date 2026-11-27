@@ -420,11 +420,20 @@ export default function Home() {
 
   // Handle wiki loading completion
   const handleWikiLoadComplete = () => {
-    // Navigate to the digital garden
-    setWikiTransition({ fading: false, loading: false });
-    // Using window.location to force full navigation or router
+    // Leave the black overlay up: the browser keeps painting this page until
+    // /wiki is ready, so clearing it here would flash the desktop.
     window.location.href = '/wiki';
   };
+
+  // Coming back via the back button can restore this page from the bfcache
+  // with the overlay still active, so clear it on restore.
+  useEffect(() => {
+    const handlePageShow = (e) => {
+      if (e.persisted) setWikiTransition({ fading: false, loading: false });
+    };
+    window.addEventListener('pageshow', handlePageShow);
+    return () => window.removeEventListener('pageshow', handlePageShow);
+  }, []);
 
   return (
     <>

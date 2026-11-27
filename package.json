@@ -9,7 +9,7 @@
     "lint": "eslint",
     "sync-notes": "node scripts/sync-notes.js",
     "deploy": "next build && wrangler deploy",
-    "publish-garden": "npm run sync-notes && npm run deploy"
+    "publish-universe": "npm run sync-notes && npm run deploy"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",

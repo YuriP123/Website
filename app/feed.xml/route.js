@@ -1,6 +1,6 @@
 import { SITE_URL, getRecentNotes, renderNote } from '@/lib/org-api';
 
-// RSS feed of recently tended notes, generated at build time as /feed.xml
+// RSS feed of recently updated notes, generated at build time as /feed.xml
 export const dynamic = 'force-static';
 
 const escapeXml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[c]));
@@ -23,10 +23,10 @@ export async function GET() {
   const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Yuri's Digital Garden</title>
+    <title>Yuri's Digital Universe</title>
     <link>${SITE_URL}/wiki/</link>
     <atom:link href="${SITE_URL}/feed.xml" rel="self" type="application/rss+xml" />
-    <description>Recently tended notes</description>
+    <description>Recently updated notes</description>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 ${items.join('\n')}
   </channel>
